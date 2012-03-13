@@ -10,7 +10,7 @@ def abiquo_upgrade_post(anaconda):
 
     # apply the delta schema
     schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-delta-1_8_5-to-2_0_0.sql"
-    schema_path2 = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-premium-delta-1.8.5-to-2.0.0.sql"
+    schema_path2 = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-premium-delta-1_8_5-to-2_0_0.sql"
 
     # Upgrade database if this is a server install
     if os.path.exists(schema_path):
