@@ -12,6 +12,24 @@ def abiquo_upgrade_post(anaconda):
     schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-delta-1_8_5-to-2_0_0.sql"
     schema_path2 = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-premium-delta-1_8_5-to-2_0_0.sql"
 
+    work_path = anaconda.rootPath + "/opt/abiquo/tomcat/work"
+    temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
+    
+    # Clean tomcat 
+    if os.path.exists(work_path):
+        log.info("ABIQUO: Cleaning tomcat work folder...")
+        iutil.execWithRedirect("/bin/rm",
+                                ['-rf',work_path],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+
+    if os.path.exists(temp_path):
+        log.info("ABIQUO: Cleaning tomcat temp folder...")
+        iutil.execWithRedirect("/bin/rm",
+                                ['-rf',temp_path],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+
     # Upgrade database if this is a server install
     if os.path.exists(schema_path):
         schema = open(schema_path)

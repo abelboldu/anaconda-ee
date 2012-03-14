@@ -15,7 +15,7 @@ def abiquo_upgrade_pre(anaconda):
 	sys.exit(0)
 
     win = anaconda.intf.progressWindow("Upgrading",
-                              "Nuclear Launch detected, upgrading to 2.0.0...", 
+                              "Previous installation detected, upgrading to 2.0.0...", 
                               5)
     abiquo_config_dir = anaconda.rootPath + '/opt/abiquo/config'
     db_dir = anaconda.rootPath + '/var/lib/mysql/kinton'
