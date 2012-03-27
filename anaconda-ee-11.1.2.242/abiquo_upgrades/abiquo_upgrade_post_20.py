@@ -50,7 +50,14 @@ def abiquo_upgrade_post(anaconda):
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
         schema.close()
-    
+        
+        # Start redis if it is a server install (not included in previous versions)
+        iutil.execWithRedirect("/sbin/chkconfig",
+                                ['redis', "on"],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)    
+
+
     if os.path.exists(schema_path2):
         schema = open(schema_path2)
         log.info("ABIQUO: Updating Abiquo database (premium delta)...")
