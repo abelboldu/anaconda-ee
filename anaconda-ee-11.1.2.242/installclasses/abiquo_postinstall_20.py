@@ -5,6 +5,7 @@ import re
 import shutil
 import logging
 import glob
+import stat
 log = logging.getLogger("anaconda")
 
 def abiquoPostInstall(anaconda):
@@ -88,6 +89,52 @@ exit 0
         f = open(anaconda.rootPath + "/opt/abiquo/config/abiquo.properties", "a")
         f.write("abiquo.virtualfactory.kvm.fullVirt = false\n")
         f.close()
+
+        # Run ciab-setup at the firstboot
+        f = open(anaconda.rootPath + "/etc/rc.d/init.d/firstboot", "w")
+        f.write("""
+#!/bin/sh
+#
+# firstboot	Cloud-in-a-box initial setup
+#
+# chkconfig: 2345 99 05
+# description: Cloud-in-a-box initial setup
+#
+### BEGIN INIT INFO
+# Provides: firstboot
+# Default-Start: 2345
+# Default-Stop: 0 1 6
+# Short-Description: Cloud-in-a-box initial setup
+# Description: Cloud-in-a-box initial setup
+### END INIT INFO
+
+#!/bin/sh
+#
+# Cloud-in-a-box initial setup
+
+/usr/bin/ciab-setup
+
+# Disables itself
+/sbin/chkconfig firstboot off
+
+exit 0
+""")
+        f.close()
+        # Enable firstboot
+        iutil.execWithRedirect("/bin/chmod",
+                                ['a+x', "/etc/rc.d/init.d/firstboot"],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+        iutil.execWithRedirect("/sbin/chkconfig",
+                                ['--add', "firstboot"],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+        iutil.execWithRedirect("/sbin/chkconfig",
+                                ['firstboot', "on"],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+
+
     
 
     if anaconda.backend.isGroupSelected('abiquo-dhcp-relay'):
@@ -243,6 +290,8 @@ exit 0
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
         open(anaconda.rootPath + '/opt/vm_repository/.abiquo_repository', 'w').close()
+
+
     if anaconda.backend.isGroupSelected('abiquo-kvm') or \
         anaconda.backend.isGroupSelected('cloud-in-a-box') or \
         anaconda.backend.isGroupSelected('abiquo-virtualbox'):
