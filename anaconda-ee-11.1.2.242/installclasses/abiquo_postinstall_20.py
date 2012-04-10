@@ -88,6 +88,7 @@ exit 0
     if anaconda.backend.isGroupSelected('cloud-in-a-box'):
         f = open(anaconda.rootPath + "/opt/abiquo/config/abiquo.properties", "a")
         f.write("abiquo.virtualfactory.kvm.fullVirt = false\n")
+        f.write("abiquo.appliancemanager.checkMountedRepository = false\n")
         f.close()
 
         # Run ciab-setup at the firstboot
@@ -161,6 +162,15 @@ exit 0
         f = open(anaconda.rootPath + "/etc/exports", "a")
         f.write("/opt/vm_repository    *(rw,no_root_squash,subtree_check,insecure)\n")
         f.close()
+
+    # Avoid NFS check against /etc/mtab
+    if anaconda.backend.isGroupSelected('abiquo-nfs-repository') and \
+            anaconda.backend.isGroupSelected('abiquo-monolithic'):
+        f = open(anaconda.rootPath + "/opt/abiquo/config/abiquo.properties", "a")
+        f.write("abiquo.appliancemanager.checkMountedRepository = false\n")
+        f.close()
+ 
+
     
     if anaconda.backend.isGroupSelected('abiquo-nfs-repository'):
         iutil.execWithRedirect("/sbin/chkconfig",
