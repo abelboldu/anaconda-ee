@@ -221,9 +221,9 @@ class TaskWindow(InstallWindow):
         for g in ['abiquo-server', 'abiquo-monolithic']:
             if g in self.anaconda.id.abiquo.selectedGroups:
                 self.dispatch.skipStep("abiquo_password", skip = 0)
-
-        if ('abiquo-monolithic' in self.anaconda.id.abiquo.selectedGroups) and \
-                ('abiquo-nfs-repository' in self.anaconda.id.abiquo.selectedGroups):
+        if (('abiquo-monolithic' in self.anaconda.id.abiquo.selectedGroups) and \
+                ('abiquo-nfs-repository' in self.anaconda.id.abiquo.selectedGroups)) or \
+                (('abiquo-lvm-storage-server' in self.anaconda.id.abiquo.selectedGroups)) :
                     self.dispatch.skipStep("abiquo_nfs_config", skip = 1)
 
         if 'abiquo-distributed' not in self.anaconda.id.abiquo.selectedGroups:
