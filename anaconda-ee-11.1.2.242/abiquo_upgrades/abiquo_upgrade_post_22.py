@@ -14,7 +14,9 @@ def abiquo_upgrade_post(anaconda):
 
     work_path = anaconda.rootPath + "/opt/abiquo/tomcat/work"
     temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
-    
+    server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml"
+     
+
     # Clean tomcat 
     if os.path.exists(work_path):
         log.info("ABIQUO: Cleaning tomcat work folder...")
@@ -22,14 +24,21 @@ def abiquo_upgrade_post(anaconda):
                                 ['-rf',work_path],
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
-
     if os.path.exists(temp_path):
         log.info("ABIQUO: Cleaning tomcat temp folder...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',temp_path],
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
-
+    
+    # Remove deprecated server.xml
+    if os.path.exists(server_xml_path):
+        log.info("ABIQUO: Removing old server.xml file...")
+        iutil.execWithRedirect("/bin/rm",
+                                ['-rf',server_xml_path],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+   
     # Upgrade database if this is a server install
     if os.path.exists(schema_path):
         schema = open(schema_path)
@@ -51,13 +60,6 @@ def abiquo_upgrade_post(anaconda):
                                 root=anaconda.rootPath)
         schema.close()
         
-        # Start redis if it is a server install (not included in previous versions)
-        iutil.execWithRedirect("/sbin/chkconfig",
-                                ['redis', "on"],
-                                stdout="/dev/tty5", stderr="/dev/tty5",
-                                root=anaconda.rootPath)    
-
-
     if os.path.exists(schema_path2):
         schema = open(schema_path2)
         log.info("ABIQUO: Updating Abiquo database (premium delta)...")
@@ -78,8 +80,22 @@ def abiquo_upgrade_post(anaconda):
                                 root=anaconda.rootPath)
         schema.close()
 
+    # Add new 2.2 properties
+    sys_props = anaconda.rootPath + '/opt/abiquo/config/abiquo.properties'
+    if os.path.exists(sys_props):
+        log.info('ABIQUO: Updating system properties')
+        try:
+            config = ConfigParser.ConfigParser()
+            config.optionxform = str
+            config.read(sys_props)
+            if config.has_section('server'):
+                    if not config.has_option('server', 'abiquo.api.networking.nicspervm'):
+                            config.set('server', 'abiquo.api.networking.nicspervm', '4')
+                    if not config.has_option('server', 'abiquo.api.networking.allowMultipleNicsVlan'):
+                            config.set('server', 'abiquo.api.networking.allowMultipleNicsVlan', 'True')
+
     # restore fstab
-    backup_dir = anaconda.rootPath + '/opt/abiquo/backup/1.8.5'
+    backup_dir = anaconda.rootPath + '/opt/abiquo/backup/2.0'
     if os.path.exists('%s/fstab.anaconda' % backup_dir):
         shutil.copyfile("%s/fstab.anaconda" % backup_dir,
                 '%s/etc/fstab' % anaconda.rootPath)
