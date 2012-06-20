@@ -90,7 +90,7 @@ def abiquo_upgrade_post(anaconda):
             config.read(sys_props)
             if config.has_section('server'):
                     if not config.has_option('server', 'abiquo.api.networking.nicspervm'):
-                            config.set('server', 'abiquo.api.networking.nicspervm', '4')
+                            config.set('server', 'abiquo.api.networking.nicspervm', '0')
                     if not config.has_option('server', 'abiquo.api.networking.allowMultipleNicsVlan'):
                             config.set('server', 'abiquo.api.networking.allowMultipleNicsVlan', 'True')
 
