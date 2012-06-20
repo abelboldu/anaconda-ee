@@ -15,7 +15,10 @@ def abiquo_upgrade_post(anaconda):
     work_path = anaconda.rootPath + "/opt/abiquo/tomcat/work"
     temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
     server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml"
-     
+    
+    # redis vars
+    redis_port = 6379
+    redis_sport = str(redis_port)
 
     # Clean tomcat 
     if os.path.exists(work_path):
@@ -79,6 +82,31 @@ def abiquo_upgrade_post(anaconda):
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
         schema.close()
+
+
+    # Redis patch on server
+    if os.path.exists(schema_path):
+        log.info("ABIQUO: Applying redis patch...")
+        iutil.execWithRedirect("/usr/bin/redis-cli",
+                                ['-h', 'localhost', '-p', redis_sport ,"PING"],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)      
+
+        cmd = iutil.execWithRedirect("/usr/bin/redis-cli",
+                                ['-h', 'localhost', '-p', redis_sport ,'keys','Owner:*:*'],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
+
+
+        for owner in cmd.stdout:
+            owner = owner.strip()
+            key = owner[:owner.rfind(":")]
+            iutil.execWithRedirect("/usr/bin/redis-cli",
+                                ['-h', 'localhost', '-p', redis_sport ,'sadd',key,owner],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
+            log.info("ABIQUO: "+owner+" indexed.")
+
 
     # Add new 2.2 properties
     sys_props = anaconda.rootPath + '/opt/abiquo/config/abiquo.properties'
