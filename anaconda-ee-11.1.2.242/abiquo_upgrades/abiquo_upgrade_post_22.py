@@ -8,14 +8,7 @@ log = logging.getLogger("anaconda")
 
 def abiquo_upgrade_post(anaconda):
 
-<<<<<<< HEAD
     schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-latest-delta.sql"
-=======
-    # apply the delta schema
-    schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-delta-2_0_0-to-2_2_0.sql"
-    schema_path2 = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-premium-delta-2_0_0-to-2_2_0.sql"
-
->>>>>>> 9b55d13869168319c451b9af990efe3ca12e553a
     work_path = anaconda.rootPath + "/opt/abiquo/tomcat/work"
     temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
     server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml"
