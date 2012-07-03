@@ -8,11 +8,19 @@ log = logging.getLogger("anaconda")
 
 def abiquo_upgrade_post(anaconda):
 
+<<<<<<< HEAD
     schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-latest-delta.sql"
+=======
+    # apply the delta schema
+    schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-delta-2_0_0-to-2_2_0.sql"
+    schema_path2 = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-premium-delta-2_0_0-to-2_2_0.sql"
+
+>>>>>>> 9b55d13869168319c451b9af990efe3ca12e553a
     work_path = anaconda.rootPath + "/opt/abiquo/tomcat/work"
     temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
     server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml"
-    
+    client_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/client-premium.xml"
+
     # redis vars
     redis_port = 6379
     redis_sport = str(redis_port)
@@ -30,15 +38,15 @@ def abiquo_upgrade_post(anaconda):
                                 ['-rf',temp_path],
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
-    
-    # Remove deprecated server.xml
+
+    # Move server.xml
     if os.path.exists(server_xml_path):
-        log.info("ABIQUO: Removing old server.xml file...")
-        iutil.execWithRedirect("/bin/rm",
-                                ['-rf',server_xml_path],
+        log.info("ABIQUO: Renaming server.xml file to client-premium.xml...")
+        iutil.execWithRedirect("/bin/mv",
+                                [server_xml_path,client_xml_path],
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
-   
+
     # Upgrade database if this is a server install
     if os.path.exists(schema_path):
         schema = open(schema_path)
@@ -99,6 +107,17 @@ def abiquo_upgrade_post(anaconda):
                             config.set('server', 'abiquo.api.networking.nicspervm', '0')
                     if not config.has_option('server', 'abiquo.api.networking.allowMultipleNicsVlan'):
                             config.set('server', 'abiquo.api.networking.allowMultipleNicsVlan', 'True')
+                    if not config.has_option('server', 'abiquo.vi.check.delay'):
+                            config.set('server', 'abiquo.vi.check.delay','900000')
+                    if not config.has_option('server', 'abiquo.tasks.trimmer.delay'):
+                            config.set('server', 'abiquo.tasks.trimmer.delay','86400000')
+                    if not config.has_option('server', 'abiquo.tasks.history.size'):
+                            config.set('server', 'abiquo.tasks.history.size','20')
+            if config.has_section('remote-services'):
+                    if not config.has_option('remote-services', 'abiquo.vsm.xen.refresh.retries'):
+                            config.set('remote-services', 'abiquo.vsm.xen.refresh.retries','5')
+                    if not config.has_option('remote-services', 'abiquo.vsm.xen.refresh.mstosleep'):
+                            config.set('remote-services', 'abiquo.vsm.xen.refresh.mstosleep','1000')
 
     # restore fstab
     backup_dir = anaconda.rootPath + '/opt/abiquo/backup/2.0'
