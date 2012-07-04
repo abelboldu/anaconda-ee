@@ -36,7 +36,6 @@ class Abiquo:
         # dont do this in test mode!
         if flags.test:
             return
-        
 
         #
         # if abiquo config directory does not exist, we are installing a HV
@@ -68,17 +67,13 @@ class Abiquo:
             f.write("abiquo.auth.module = %s\n" %
                     self.abiquo_auth_module )
             f.write("abiquo.server.api.location = http://%s/api\n" %
-                    self.abiquo_server_ip)
-             f.write("abiquo.api.location = %s\n" %
-                    self.abiquo_server_nicspervm)
-           
+                    self.abiquo_server_ip )
             # add redis props if not instaling remote services
             if not os.path.isdir(instPath + '/opt/abiquo/tomcat/webapps/virtualfactory'):
                     f.write("abiquo.redis.port = %s\n" %
                             self.abiquo_redis_port)
                     f.write("abiquo.redis.host = %s\n" %
                             self.abiquo_redis_host)
-
             f.close()
 
 
@@ -101,7 +96,6 @@ class Abiquo:
         self.abiquo_database_host = '127.0.0.1'
         self.abiquo_database_user = 'root'
         self.abiquo_database_password = ''
-        self.abiquo_server_nicspervm = '4' # Added in 2.2
         self.abiquo_dhcprelay_vrange_1 = 1
         self.abiquo_dhcprelay_vrange_2 = 100
         self.abiquo_dhcprelay_management_if = 'eth0'
@@ -113,5 +107,4 @@ class Abiquo:
         self.abiquo_redis_host =  '127.0.0.1'
         self.abiquo_redis_port = '6379'
         self.install_type = 'ciab'
-
 
