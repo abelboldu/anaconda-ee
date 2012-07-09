@@ -62,6 +62,10 @@ def abiquo_upgrade_post(anaconda):
     # Redis patch on server
     if os.path.exists(schema_path):
         log.info("ABIQUO: Applying redis patch...")
+        iutil.execWithRedirect("/etc/init.d/redis",
+                                ['start'],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
         iutil.execWithRedirect("/usr/bin/redis-cli",
                                 ['-h', 'localhost', '-p', redis_sport ,"PING"],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
