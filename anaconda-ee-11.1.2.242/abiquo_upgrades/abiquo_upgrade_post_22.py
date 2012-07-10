@@ -13,6 +13,7 @@ def abiquo_upgrade_post(anaconda):
     temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
     server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml"
     client_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/client-premium.xml"
+    server_path = anaconda.rootPath + "/opt/abiquo/tomcat/webapps/server"
 
     # redis vars
     redis_port = 6379
@@ -31,13 +32,19 @@ def abiquo_upgrade_post(anaconda):
                                 ['-rf',temp_path],
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
-    # Move server.xml to client-premium.xml
+    # Move server.xml to client-premium.xml and remove deprecated server webapp
     if os.path.exists(server_xml_path):
         log.info("ABIQUO: Moving server.xml to client-premium.xml...")
         iutil.execWithRedirect("/bin/mv",
                                 [server_xml_path,client_xml_path],
                                 stdout="/dev/tty5", stderr="/dev/tty5",
                                 root=anaconda.rootPath)
+        log.info("ABIQUO: Removing server webapp...")
+        iutil.execWithRedirect("/bin/rm",
+                                ['-rf',server_path],
+                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                root=anaconda.rootPath)
+
 
     # Upgrade database if this is a server install
     if os.path.exists(schema_path):
