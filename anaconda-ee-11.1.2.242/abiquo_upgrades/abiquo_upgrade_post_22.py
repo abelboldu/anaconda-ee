@@ -73,9 +73,9 @@ def abiquo_upgrade_post(anaconda):
 
         cmd = iutil.execWithRedirect("/usr/bin/redis-cli",
                                 ['-h', 'localhost', '-p', redis_sport ,'keys','Owner:*:*'],
-                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
+                                stdout="/mnt/sysimage/tmp/redis_owners", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
-        for owner in cmd.stdout:
+        for owner in open('/mnt/sysimage/tmp/redis_owners','r').readlines() :
             owner = owner.strip()
             key = owner[:owner.rfind(":")]
             iutil.execWithRedirect("/usr/bin/redis-cli",
