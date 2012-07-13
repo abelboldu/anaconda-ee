@@ -24,25 +24,25 @@ def abiquo_upgrade_post(anaconda):
         log.info("ABIQUO: Cleaning tomcat work folder...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',work_path],
-                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
     if os.path.exists(temp_path):
         log.info("ABIQUO: Cleaning tomcat temp folder...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',temp_path],
-                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
     # Move server.xml to client-premium.xml and remove deprecated server webapp
     if os.path.exists(server_xml_path):
         log.info("ABIQUO: Moving server.xml to client-premium.xml...")
         iutil.execWithRedirect("/bin/mv",
                                 [server_xml_path,client_xml_path],
-                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
         log.info("ABIQUO: Removing server webapp...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',server_path],
-                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
 
 
@@ -52,7 +52,7 @@ def abiquo_upgrade_post(anaconda):
         log.info("ABIQUO: Updating Abiquo database (community delta)...")
         iutil.execWithRedirect("/sbin/ifconfig",
                                 ['lo', 'up'],
-                                stdout="/dev/tty5", stderr="/dev/tty5",
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
         iutil.execWithRedirect("/etc/init.d/mysqld",
                                 ['start'],
