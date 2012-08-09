@@ -11,7 +11,7 @@ def abiquo_upgrade_post(anaconda):
     schema_path = anaconda.rootPath + "/usr/share/doc/abiquo-server/database/kinton-latest-delta.sql"
     work_path = anaconda.rootPath + "/opt/abiquo/tomcat/work"
     temp_path = anaconda.rootPath + "/opt/abiquo/tomcat/temp"
-    server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml"
+    server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml.rpmsave"
     client_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/client-premium.xml"
     server_path = anaconda.rootPath + "/opt/abiquo/tomcat/webapps/server"
 
@@ -19,22 +19,10 @@ def abiquo_upgrade_post(anaconda):
     redis_port = 6379
     redis_sport = str(redis_port)
 
-    # Clean tomcat 
-    if os.path.isdir(work_path):
-        log.info("ABIQUO: Cleaning tomcat work folder...")
-        iutil.execWithRedirect("/bin/rm",
-                                ['-rf',work_path],
-                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
-                                root=anaconda.rootPath)
-    if os.path.isdir(temp_path):
-        log.info("ABIQUO: Cleaning tomcat temp folder...")
-        iutil.execWithRedirect("/bin/rm",
-                                ['-rf',temp_path],
-                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
-                                root=anaconda.rootPath)
+    log.info("ABIQUO: Post install steps")
     # Move server.xml to client-premium.xml and remove deprecated server webapp
     if os.path.exists(server_xml_path):
-        log.info("ABIQUO: Moving server.xml to client-premium.xml...")
+        log.info("ABIQUO: Moving old server.xml to client-premium.xml...")
         iutil.execWithRedirect("/bin/mv",
                                 [server_xml_path,client_xml_path],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
@@ -42,6 +30,17 @@ def abiquo_upgrade_post(anaconda):
         log.info("ABIQUO: Removing server webapp...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',server_path],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
+        # Clean tomcat 
+        log.info("ABIQUO: Cleaning tomcat work folder...")
+        iutil.execWithRedirect("/bin/rm",
+                                ['-rf',work_path],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
+        log.info("ABIQUO: Cleaning tomcat temp folder...")
+        iutil.execWithRedirect("/bin/rm",
+                                ['-rf',temp_path],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
 
