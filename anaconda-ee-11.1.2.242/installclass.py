@@ -152,7 +152,6 @@ class BaseInstallClass:
                  "reposetup",
                  "basepkgsel",
 		 "tasksel",                                  
-		 #"abiquo",
 		 "abiquo_distributed",
 		 "postselection",
 		 "abiquo_password",

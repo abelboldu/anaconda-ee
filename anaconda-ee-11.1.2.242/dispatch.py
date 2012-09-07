@@ -96,7 +96,6 @@ installSteps = [
     ("abiquo_distributed", ), 
     ("abiquo_password", ),
     ("group-selection", ),
-    #("abiquo", ), 
     ("abiquo_nfs_config", ),
     ("abiquo_rs", ), 
     ("abiquo_v2v", ), 

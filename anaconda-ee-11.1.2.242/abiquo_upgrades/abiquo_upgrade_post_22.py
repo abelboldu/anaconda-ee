@@ -14,6 +14,7 @@ def abiquo_upgrade_post(anaconda):
     server_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/server.xml.rpmsave"
     client_xml_path = anaconda.rootPath + "/opt/abiquo/tomcat/conf/Catalina/localhost/client-premium.xml"
     server_path = anaconda.rootPath + "/opt/abiquo/tomcat/webapps/server"
+    lvm_path = anaconda.rootPath + "/opt/abiquo/lvmiscsi"
 
     # redis vars
     redis_port = 6379
@@ -89,6 +90,16 @@ def abiquo_upgrade_post(anaconda):
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="//mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
             log.info("ABIQUO: "+owner+" indexed.")
+
+    if os.path.exists(schema_path):
+        schema = open(schema_path)
+        log.info("ABIQUO: Fixing lvmiscsi service...")
+        iutil.execWithRedirect("/sbin/chkconfig",
+                                ['abiquo-lvmiscsi', 'on'],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
+
+
 
 
     # restore fstab
