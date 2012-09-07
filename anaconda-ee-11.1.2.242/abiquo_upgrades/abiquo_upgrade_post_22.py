@@ -91,11 +91,15 @@ def abiquo_upgrade_post(anaconda):
                                 root=anaconda.rootPath)
             log.info("ABIQUO: "+owner+" indexed.")
 
-    if os.path.exists(schema_path):
-        schema = open(schema_path)
+    if os.path.exists(lvm_path):
+        schema = open(lvm_path)
         log.info("ABIQUO: Fixing lvmiscsi service...")
         iutil.execWithRedirect("/sbin/chkconfig",
-                                ['abiquo-lvmiscsi', 'on'],
+                                ['--add','abiquo-lvmiscsi'],
+                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
+                                root=anaconda.rootPath)
+        iutil.execWithRedirect("/sbin/chkconfig",
+                                ['abiquo-lvmiscsi','on'],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
 
