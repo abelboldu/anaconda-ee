@@ -92,7 +92,6 @@ def abiquo_upgrade_post(anaconda):
             log.info("ABIQUO: "+owner+" indexed.")
 
     if os.path.exists(lvm_path):
-        schema = open(lvm_path)
         log.info("ABIQUO: Fixing lvmiscsi service...")
         iutil.execWithRedirect("/sbin/chkconfig",
                                 ['--add','abiquo-lvmiscsi'],
@@ -102,8 +101,6 @@ def abiquo_upgrade_post(anaconda):
                                 ['abiquo-lvmiscsi','on'],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
-
-
 
 
     # restore fstab
