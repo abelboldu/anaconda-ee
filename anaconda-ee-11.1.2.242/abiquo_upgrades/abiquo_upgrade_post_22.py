@@ -33,13 +33,14 @@ def abiquo_upgrade_post(anaconda):
                                 ['-rf',server_path],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
-    if os.path.exists(server_path):
-        # Clean tomcat 
+    # Clean tomcat 
+    if os.path.exists(work_path):
         log.info("ABIQUO: Cleaning tomcat work folder...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',work_path],
                                 stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
                                 root=anaconda.rootPath)
+    if os.path.exists(temp_path):
         log.info("ABIQUO: Cleaning tomcat temp folder...")
         iutil.execWithRedirect("/bin/rm",
                                 ['-rf',temp_path],
