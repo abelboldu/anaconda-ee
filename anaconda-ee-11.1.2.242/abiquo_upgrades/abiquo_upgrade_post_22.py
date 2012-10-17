@@ -35,19 +35,11 @@ def abiquo_upgrade_post(anaconda):
                                 root=anaconda.rootPath)
     # Clean tomcat 
     if os.path.exists(work_path):
-        log.info("ABIQUO: Cleaning tomcat work folder...")
-        iutil.execWithRedirect("/bin/rm",
-                                ['-rf',work_path],
-                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
-                                root=anaconda.rootPath)
+        log.info("ABIQUO: Cleaning work folder...")
+        shutil.rmtree(work_path)
     if os.path.exists(temp_path):
-        log.info("ABIQUO: Cleaning tomcat temp folder...")
-        iutil.execWithRedirect("/bin/rm",
-                                ['-rf',temp_path],
-                                stdout="/mnt/sysimage/var/log/abiquo-postinst.log", stderr="/mnt/sysimage/var/log/abiquo-postinst.log",
-                                root=anaconda.rootPath)
-
-
+        log.info("ABIQUO: Cleaning temp folder...")
+        shutil.rmtree(temp_path)
     # Upgrade database if this is a server install
     if os.path.exists(schema_path):
         schema = open(schema_path)
